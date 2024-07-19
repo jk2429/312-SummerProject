@@ -15,8 +15,39 @@ app.use(express.static("public"));
 
 //ADD DATABASE SCHEMA HERE
 
+//Home page
 app.get("/", function(req, res) {
 	res.render("home");
+});
+
+//Blog page
+app.get("/blog", function(req, res) {
+	res.render("blog");
+});
+
+//Profile page
+app.get("/profile", function(req, res) {
+	res.render("profile");
+});
+
+//Signup page
+app.get("/signup", function(req, res) {
+	res.render("signup");
+});
+
+//Login page
+app.get("/login", function(req, res) {
+	res.render("login");
+});
+
+//Create blog
+app.get("/createBlog", function(req, res) {
+	res.render("createBlog");
+});
+
+//Search Engine Query
+app.post("/search", function(req, res) {
+	//TODO
 });
 
 app.listen(3000, function() {
