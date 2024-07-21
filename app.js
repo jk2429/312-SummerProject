@@ -41,8 +41,8 @@ app.get("/login", function(req, res) {
 });
 
 //Create blog
-app.get("/createBlog", function(req, res) {
-	res.render("createBlog");
+app.get("/newPost", function(req, res) {
+	res.render("newPost");
 });
 
 //Search Engine Query
