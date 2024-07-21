@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Signup</title>
+</head>
+<body>
+	<%- include('navBar') %>
+	
+	<form action="/signup" method="post">
+		<label for="username">Username:</label>
+		<input type="text" name="username" id="username" required>
+		<br>
+		<label for="password">Password:</label>
+		<input type="password" name="password" id="password" required>
+		<br>
+		<% if (errorMessage) { %>
+			<p style="color: red;"><%- errorMessage %></p>
+			<br>
+		<% } %>
+		<label for="bio">Bio:</label>
+		<input type="text" name="bio" id="bio" required>
+		<br>
+		<label for="profilePicture">Profile Picture:<label>
+		<input type="file" name="profilePicture" id="profilePicture" accept="image/*" required>
+		<br>
+		<button type="submit">Signup</button>
+	</form>
+</body>
+</html>
