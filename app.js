@@ -31,8 +31,8 @@ const storage = multer.diskStorage({
 	destination: function(req, file, cb) {
 		cb(null, 'public/uploads');
 	},
-	filename: function(req, file, eb) {
-		cb(null, Date.now() + path.extname(file.orginalname));
+	filename: function(req, file, cb) {
+		cb(null, Date.now() + path.extname(file.originalname));
 	}
 });
 
@@ -48,7 +48,7 @@ function checkAuthenticated(req, res, next) {
 }
 
 //ADD DATABASE
-//mongoose.connect();
+mongoose.connect("mongodb://127.0.0.1:27017/SummerProject");
 
 //ADD DATABASE SCHEMA HERE
 //User schema
@@ -61,25 +61,56 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", userSchema);
 
+//Blog post schema
+const blogPostSchema = new mongoose.Schema({
+	title: String,
+	content: String,
+	tags: [String],
+	image: String,
+	author: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'User'
+	},
+	date: String
+});
+
+const BlogPost = mongoose.model("BlogPost", blogPostSchema);
+
 //Home page
 app.get("/", function(req, res) {
-	res.render("home");
+	BlogPost.find({})
+		.sort({ date: -1 })
+		.limit(3)
+		.populate('author', 'username')
+		.then(function(latestPosts) {
+			res.render("home", { latestPosts: latestPosts });
+		});
 });
 
 //Blog page
 app.get("/blog", function(req, res) {
-	res.render("blog");
+	BlogPost.find({})
+		.sort({ date: -1 })
+		.populate('author', 'username')
+		.then(function(blogPosts) {
+			res.render("blog", { blogPosts: blogPosts });
+		});
 });
 
 //Profile page
 app.get("/profile", checkAuthenticated, function(req, res) {
-	User.findById(req.session.userId, function(err, foundUser) {
-		if (err || !foundUser) {
-			res.redirect("/login");
-		} else {
-			res.render("profile", { user: foundUser });
-		}
-	});
+	User.findById(req.session.userId)
+		.then(function(foundUser) {
+			if (!foundUser) {
+				res.redirect("/login");
+			} else {
+				//Find blogs posted by user
+				BlogPost.find({ author: req.session.userId })
+					.then(function(blogPosts) {
+						res.render("profile", { user: foundUser, blogPosts: blogPosts });
+					});
+			}
+		});
 });
 
 //Signup page
@@ -87,7 +118,7 @@ app.get("/signup", function(req, res) {
 	res.render("signup", { errorMessage: null });
 });
 
-app.post("/signup", function(req, res) {
+app.post("/signup", upload.single("profilePicture"), function(req, res) {
 	const newUser = new User({
 		username: req.body.username,
 		password: req.body.password,
@@ -95,15 +126,20 @@ app.post("/signup", function(req, res) {
 		profilePicture: req.file ? '/uploads/' + req.file.filename : null
 	});
 	
-	newUser.save(function(err) {
-		if (err) {
-			res.render("/signup", { errorMessage: "Please fill in all parts of the signup form" });
-		} else {
-			req.session.isAuthenticated = true;
-			req.session.userId = newUser._id;
-			res.redirect("/profile");
-		}
-	});
+	//Check for unique username
+	User.findOne({ username: newUser.username })
+		.then(function(foundUser) {
+			if (!foundUser) {
+				newUser.save()
+					.then(function() {
+						req.session.isAuthenticated = true;
+						req.session.userId = newUser._id;
+						res.redirect("/profile");
+					});
+			} else {
+				res.render("/signup", { errorMessage: "Pick a different username" });
+			}
+		});
 });
 
 //Login page
@@ -115,15 +151,16 @@ app.post("/login", function(req, res) {
 	const username = req.body.username;
 	const password = req.body.password;
 	
-	User.findOne({ username: username, password: password }, function (err, foundUser) {
-		if (err || !foundUser) {
-			res.render("/login", { errorMessage: "Incorrect username or password" });
-		} else {
-			req.session.isAuthenticated = true;
-			req.session.userIs = foundUser._id;
-			res.redirect("/profile");
-		}
-	});
+	User.findOne({ username: username, password: password })
+		.then(function (foundUser) {
+			if (!foundUser) {
+				res.render("/login", { errorMessage: "Incorrect username or password" });
+			} else {
+				req.session.isAuthenticated = true;
+				req.session.userId = foundUser._id;
+				res.redirect("/profile");
+			}
+		});
 });
 
 //Logout post
@@ -137,8 +174,74 @@ app.post("/logout", function(req, res) {
 });
 
 //Create blog
-app.get("/newPost", function(req, res) {
-	res.render("newPost");
+app.get("/newPost", checkAuthenticated, function(req, res) {
+	User.findById(req.session.userId)
+		.then(function(foundUser) {
+			if (!foundUser) {
+				res.redirect("/login");
+			} else {
+				res.render("newPost");
+			}
+		});
+});
+
+app.post("/newPost", upload.single("image"), function(req, res) {
+	const newPost = new BlogPost({
+		title: req.body.title,
+		content: req.body.blog,
+		tags: req.body.tag.split(',').map(tag => tag.trim()),
+		image: req.file ? '/uploads/' + req.file.filename : null,
+		author: req.session.userId,
+		date: date.getDate()
+	});
+	
+	newPost.save()
+		.then(function() {
+			res.redirect("/profile");
+		});
+});
+
+app.post("/deletePost", checkAuthenticated, function(req, res) {
+	const postId = req.body.postId;
+	
+	BlogPost.findByIdAndDelete(postId)
+		.then(function() {
+			res.redirect("/profile");
+		});
+});
+
+app.get("/editPost", checkAuthenticated, function(req, res) {
+	const postId = req.query.postId;
+	
+	BlogPost.findById(postId)
+		.then(function(post) {
+			if (!post) {
+				return res.redirect("/profile");
+			}
+			res.render("editPost", { post: post });
+		});
+});
+
+app.post("/editPost", checkAuthenticated, upload.single("image"), function(req, res) {
+	const postId = req.body.postId;
+	
+	BlogPost.findById(postId)
+		.then(function(post) {
+			if (!post) {
+				return res.redirect("/profile");
+			}
+			
+			post.title = req.body.title;
+			post.content = req.body.content;
+			post.tags = req.body.tags.split(',').map(tag => tag.trim());
+			post.image = req.file ? '/uploads/' + req.file.filename : post.image;
+			post.date = date.getDate();
+			
+			return post.save();
+		})
+		.then(function() {
+			res.redirect("/profile");
+		});
 });
 
 //Search Engine Query

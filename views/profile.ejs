@@ -6,10 +6,37 @@
     <title>My Profile</title>
 </head>
 <body>
+	<%- include('navBar') %>
+	
     <div>
 		<img src="<%- user.profilePicture %>" alt="Profile Picture.png">
 		<h2><%- user.username %></h2>
 		<p>Bio:<br><%- user.bio %></p>
+	</div>
+	<div>
+		<h2>My Blogs</h2>
+		<% blogPosts.forEach(function(post) { %>
+			<div>
+				<h3><%- post.title %><h3>
+				<p><%- post.content %></p>
+				<% if (post.tags) { %>
+					<p><%- post.tags.join(', ') %></p>
+				<% } %>
+				<% if (post.image) { %>
+					<img src="<%- post.image %>">
+				<% } %>
+				<p>Posted on: <%- post.date %></p>
+				<form action="/editPost" method="get">
+					<input type="hidden" name="postId" value="<%- post._id %>">
+					<button type="submit">Edit</button>
+				</form>
+				<form action="/deletePost" method="post">
+					<input type="hidden" name="postId" value="<%- post._id %>">
+					<button type="submit">Delete</button>
+				</form>
+			</div>
+			<hr>
+		<% }) %>
 	</div>
 </body>
 </html>
