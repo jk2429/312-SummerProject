@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+</head>
+<body>
+    <%- include('navBar') %>
+    <h1>Search Results for "<%- query %>"</h1>
+
+    <% if (searchResults.length > 0) { %>
+        <% searchResults.forEach(function(post) { %>
+            <div>
+                <h2><%- post.title %></h2>
+                <p><%- post.content %></p>
+                <% if (post.tags) { %>
+                    <p><%- post.tags.join(', ') %></p>
+                <% } %>
+                <% if (post.image) { %>
+                    <img src="<%- post.image %>" alt="Blog Image">
+                <% } %>
+                <p>Posted on: <%- post.date %></p>
+                <p>Posted by: <%- post.author.username %></p>
+            </div>
+            <hr>
+        <% }) %>
+    <% } else { %>
+        <p>No results found for "<%= query %>".</p>
+    <% } %>
+</body>
+</html>

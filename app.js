@@ -246,7 +246,45 @@ app.post("/editPost", checkAuthenticated, upload.single("image"), function(req, 
 
 //Search Engine Query
 app.post("/search", function(req, res) {
-	//TODO
+	const query = req.body.query;
+	const searchResults = [];
+	
+	//Search Titles
+	BlogPost.find({ title: new RegExp(query, "i") })
+		.populate('author', 'username')
+		.then(function(postsByTitle) {
+			searchResults.push(...postsByTitle);
+			
+			//Search tags
+			return BlogPost.find({ tags: new RegExp(query, "i") }).populate('author', 'username');
+		})
+		.then(function(postsByTags) {
+			searchResults.push(...postsByTags);
+			
+			//Search Users
+			return User.find({ username: new RegExp(query, "i") });
+		})
+		.then(function(users) {
+			const userIds = users.map(user => user._id);
+			
+			//Search blogPosts by users
+			return BlogPost.find({ author: {$in: userIds} }).populate('author', 'username');
+		})
+		.then(function(postsByUsers) {
+			searchResults.push(...postsByUsers);
+			
+			//Search content
+			return BlogPost.find({ content: new RegExp(query, "i") }).populate('author', 'username');
+		})
+		.then(function(postsByContent) {
+			searchResults.push(...postsByContent);
+			
+			//Get rid of duplicates
+			const uniqueResults = Array.from(new Set(searchResults.map(post => post._id.toString())))
+				.map(id => searchResults.find(post => post._id.toString() === id));
+				
+			res.render("search", { query: query, searchResults: uniqueResults });
+		});
 });
 
 app.listen(3000, function() {
