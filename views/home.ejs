@@ -9,7 +9,10 @@
     <%- include('navBar') %>
 	
 	<h1>Welcome to the Blog</h1>
-    <h2>Latest Posts</h2>
+	<h2>Express Yourself!</h2>
+
+	<!-- blog post display below-->
+    <h3>Latest Posts</h3>
 
     <% if (latestPosts.length > 0) { %>
         <% latestPosts.forEach(function(post) { %>
@@ -31,4 +34,6 @@
         <p>No posts available.</p>
     <% } %>
 </body>
+
+	<%- include('footer') %>
 </html>
