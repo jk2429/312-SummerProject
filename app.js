@@ -47,10 +47,9 @@ function checkAuthenticated(req, res, next) {
 	}
 }
 
-//ADD DATABASE
+//Connect to database
 mongoose.connect("mongodb://127.0.0.1:27017/SummerProject");
 
-//ADD DATABASE SCHEMA HERE
 //User schema
 const userSchema = new mongoose.Schema({
 	username: String,
@@ -87,6 +86,7 @@ app.get("/", function(req, res) {
 		});
 });
 
+
 //Blog page
 app.get("/blog", function(req, res) {
 	BlogPost.find({})
@@ -113,12 +113,30 @@ app.get("/profile", checkAuthenticated, function(req, res) {
 		});
 });
 
+//Function for valid password
+function isValidPassword(password) {
+	const uppercasePattern = /[A-Z]/;
+	const numberPattern = /[0-9]/;
+	const specialCharacterPattern = /[!@#$%^&*(),.?":{}|<>]/;
+	
+	return uppercasePattern.test(password) &&
+		numberPattern.test(password) &&
+		specialCharacterPattern.test(password);
+}
+
 //Signup page
 app.get("/signup", function(req, res) {
 	res.render("signup", { errorMessage: null });
 });
 
 app.post("/signup", upload.single("profilePicture"), function(req, res) {
+	
+	
+	//Check for valid password
+	if (!isValidPassword(req.body.password)) {
+		return res.render("signup", { errorMessage: "Password must contain at least one uppercase, one number and one special character" });
+	}
+	
 	const newUser = new User({
 		username: req.body.username,
 		password: req.body.password,
@@ -137,7 +155,7 @@ app.post("/signup", upload.single("profilePicture"), function(req, res) {
 						res.redirect("/profile");
 					});
 			} else {
-				res.render("/signup", { errorMessage: "Pick a different username" });
+				res.render("signup", { errorMessage: "Pick a different username" });
 			}
 		});
 });
@@ -154,7 +172,7 @@ app.post("/login", function(req, res) {
 	User.findOne({ username: username, password: password })
 		.then(function (foundUser) {
 			if (!foundUser) {
-				res.render("/login", { errorMessage: "Incorrect username or password" });
+				res.render("login", { errorMessage: "Incorrect username or password" });
 			} else {
 				req.session.isAuthenticated = true;
 				req.session.userId = foundUser._id;
