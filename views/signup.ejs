@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="css/styles.css">
     <title>Blog Signup</title>
 </head>
 <body>
+	<%- include('header') %>
 	<%- include('navBar') %>
 	
 	<form action="/signup" enctype="multipart/form-data" method="post">
@@ -28,4 +30,5 @@
 		<button type="submit">Signup</button>
 	</form>
 </body>
+	<%- include('footer') %>
 </html>

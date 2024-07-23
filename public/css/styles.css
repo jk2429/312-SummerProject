@@ -1,0 +1,55 @@
+/*Header styling*/
+header{
+	background-color: #333;
+	padding: 10px 0;
+}
+header h1{
+color: aliceblue;
+position:  static;
+text-align: center;
+
+}
+header h2{
+	color: aliceblue;
+	position:  static;
+	text-align: center;
+}
+
+/* Basic navbar styling */
+ul.navbar {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    background-color: #333;
+    overflow: hidden;
+	text-align: center;
+}
+
+/* Style the navbar items, left justified */
+ul.navbar li {
+    float: left;
+	display: inline;
+}
+
+/* Style the text of the links */
+ul.navbar li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+	font-weight: bold;
+}
+
+/* Change the link color on hover */
+ul.navbar li a:hover {
+    background-color: #111;
+	border-radius: 4px;
+}
+
+/*Style footer */
+footer{
+padding: 10px;
+position: static;
+text-align: center;
+}

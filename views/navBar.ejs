@@ -1,12 +1,12 @@
 <nav>
-	<ul>
+	<ul class="navbar">
 		<li><a href="/">Home</a></li>
 		<li><a href="/blog">Blog</a></li>
 		
 	<% if (isAuthenticated) { %>
 		<li><a href="/profile">Profile</a></li>
 		<li><a href="/newPost">New Blog</a></li>
-	</ul>
+	
 	<form action="/logout" method="POST">
 		<button type="submit">Logout</button>
 	</form>
@@ -14,11 +14,11 @@
 	<% } else { %>
 		<li><a href="/login">Login</a></li>
 		<li><a href="signup">Signup</a></li>
-	</ul>
 	<% } %>
 	
 	<form action="/search" method="POST">
 		<input type="text" name="query" id="query" placeholder="Search...">
 		<button type="submit">Search</button>
 	</form>
+</ul>
 </nav>
