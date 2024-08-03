@@ -3,25 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Results</title>
+	<link rel="stylesheet" href="css/styles.css">
+    <title>Search Results For "<%= query %>"</title>
 </head>
 <body>
+
+	<%- include('header') %>
     <%- include('navBar') %>
+	
     <h1>Search Results for "<%- query %>"</h1>
 
     <% if (searchResults.length > 0) { %>
         <% searchResults.forEach(function(post) { %>
-            <div>
-                <h2><%- post.title %></h2>
-                <p><%- post.content %></p>
-                <% if (post.tags) { %>
-                    <p><%- post.tags.join(', ') %></p>
-                <% } %>
-                <% if (post.image) { %>
+            <div class="blog-container">
+				<% if (post.image) { %>
                     <img src="<%- post.image %>" alt="Blog Image">
                 <% } %>
-                <p>Posted on: <%- post.date %></p>
-                <p>Posted by: <%- post.author.username %></p>
+				<div class="blog-content">
+					<h3><%- post.title %></h3>
+					<p><%- post.content %></p>
+					<div class="blog-meta">
+						<% if (post.tags) { %>
+							<p><%- post.tags.join(', ') %></p>
+						<% } %>
+						<p>Posted on: <%- post.date %></p>
+						<p>Posted by: <%- post.author.username %></p>
+					</div>
+				</div>
             </div>
             <hr>
         <% }) %>

@@ -219,6 +219,7 @@ app.post("/newPost", upload.single("image"), function(req, res) {
 		});
 });
 
+//Delete Post
 app.post("/deletePost", checkAuthenticated, function(req, res) {
 	const postId = req.body.postId;
 	
@@ -228,6 +229,7 @@ app.post("/deletePost", checkAuthenticated, function(req, res) {
 		});
 });
 
+//Edit Post
 app.get("/editPost", checkAuthenticated, function(req, res) {
 	const postId = req.query.postId;
 	
