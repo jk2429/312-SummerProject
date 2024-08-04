@@ -10,6 +10,7 @@
 	<%- include('header') %>
 	<%- include('navBar') %>
 	
+	<div class="signup-container">
 	<form action="/signup" enctype="multipart/form-data" method="post">
 		<label for="username">Username:</label>
 		<input type="text" name="username" id="username" required>
@@ -24,11 +25,12 @@
 		<label for="bio">Bio:</label>
 		<input type="text" name="bio" id="bio" required>
 		<br>
-		<label for="profilePicture">Profile Picture:</label>
-        <input type="file" name="profilePicture" id="profilePicture" required>
+			<label for="profilePicture">Profile Picture:</label>
+        	<input type="file" name="profilePicture" id="profilePicture" required>
 		<br>
 		<button type="submit">Signup</button>
 	</form>
+</div>
 </body>
 	<%- include('footer') %>
 </html>
