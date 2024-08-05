@@ -8,7 +8,6 @@
 		<li><a href="/newPost">New Blog</a></li>
 	
 		<div class="logout-container">
-	<form action="/logout" method="POST">
 		<div class="search-container">
 			<form action="/search" method="POST">
 				<input type="text" name="query" id="query" placeholder="Search...">
@@ -16,8 +15,9 @@
 		
 			</form>
 		</div>
-		<button type="submit">Logout</button>
-	</form>
+		<form action="/logout" method="POST">
+			<button type="submit">Logout</button>
+		</form>
 	</div>
 	<% } else { %>
 		<li><a href="/login">Login</a></li>
