@@ -12,9 +12,13 @@
     <%- include('navBar') %>
 	
     <main>
-		<img src="<%- user.profilePicture %>" alt="Profile Picture.png">
-		<h2><%- user.username %></h2>
-		<p>Bio:<br><%- user.bio %></p>
+		<div class="profile-container">
+			<img src="<%- user.profilePicture %>" alt="Profile Picture.png">
+			<div class="profile-info">
+				<h2><%- user.username %></h2>
+				<p>Bio:<br><%- user.bio %></p>
+			</div>
+		</div>
 
 		<h2 style="text-align: center">My Blogs</h2>
 		<% blogPosts.forEach(function(post) { %>
@@ -30,7 +34,7 @@
 							<p><%- post.tags.join(', ') %></p>
 						<% } %>
 						<p>Posted on: <%- post.date %></p>
-						<p>Posted by: <%- post.author.username %></p>
+						<p>Posted by: <%- user.username %></p>
 					</div>
 				</div>
             </div>
